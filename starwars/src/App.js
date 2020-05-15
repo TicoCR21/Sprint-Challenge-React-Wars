@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import styled, { ThemeProvider, css } from "styled-components"
+import styled, { ThemeProvider, css } from "styled-components";
 import theme from "./theme/theme";
+import GetPokemon from "./components/Character";
 import axios from "axios";
 
 
@@ -10,33 +11,46 @@ const PokemonContainer = styled.div`
   display : flex;
   justify-content : center;
   flex-wrap : wrap;
-  background : red;
   margin: 0 auto;
 `;
 
-const PokemonCard = styled.div`
-  height: 700px;
-  width : 700px;
+const Buttons = styled.div`
   display : flex;
-  justify-content : space-around;
+  height: 200px;
+  width: 80%;
+  margin: 0 auto;
   align-items : center;
-  background : blue;
-  margin : 40px; 
+  justify-content: space-around;
 
+  button
+  {
+    height: 80px;
+    width : 300px;
+    font-size : 1.8rem;
+  }
 `;
 
-function GetPokemon( { name, url } )
-{
+const PokemonHeader = styled.div`
+  margin: -10px 0 60px;
+  background : #ef5350;
+  width: 100%;
+  height: 200px;
+  display: flex;
+  align-items : center;
+  
+  p
+  {
+    width : 90%;
+    margin: 0 auto;
+    font-size : 3rem;
+    color : white;
+  }
+`;
 
-  return (
-    <PokemonCard key = { name }>
-      <div> 
-        <img src = { url } alt = { name } />
-      </div>
-    </PokemonCard>
-  );
-}
-
+const LoadingHeader = styled.h1`
+  color : white;
+  font-size : 4rem;
+`;
 
 const App = () => 
 {
@@ -52,18 +66,25 @@ const App = () =>
 
   useEffect( () =>
   {
+    setLoading( true );
     axios.get( baseURL )
       .then( response =>
         {
-          //console.log(  );
           response.data.results.map( pokemon => 
             {
               axios.get( pokemon.url )
                   .then( response2 =>
                   { 
-                    //console.log( response2.data.sprites );
-                    setPokemons( prev => prev.concat( { name : pokemon.name, url : response2.data.sprites.front_default } ) );           
+                    setPokemons( prev => prev.concat( 
+                      { 
+                        name : pokemon.name, 
+                        url : response2.data.sprites.front_default, 
+                        abilities : response2.data.abilities.map( ability => ability.ability.name ),
+                        hp : response2.data.stats[ 0 ].base_stat,
+                        types : response2.data.types.map( type => type.type.name )
+                      } ) );           
                   } )
+                  .catch( response2 => console.log( "Something Went Wrong!!!" ) );
             } );
 
           setPreviousURL( response.data.previous );
@@ -73,11 +94,39 @@ const App = () =>
       .catch( response => console.log( "Something Went Wrong!!!" ) );
   }, [ baseURL ] );
 
-  console.log( pokemons );
-
-  
   return (
     <ThemeProvider theme = { theme }>
+      <PokemonHeader>
+        <p>Pokemon Card Collection</p>
+      </PokemonHeader>
+
+      <Buttons>
+        <button onClick = { e => 
+        {
+          e.preventDefault();
+          if( previousURL )
+          {
+            setBaseURL( previousURL );
+            setPokemons( [] );
+          }
+            
+        } }>Back Page</button>
+        
+        { loading ? <LoadingHeader>Loading...</LoadingHeader> : "" }
+        
+        <button onClick = { e => 
+        {
+          e.preventDefault();
+          if( nextURL )
+          {
+            setBaseURL( nextURL );
+            setPokemons( [] );
+          }
+            
+
+        } }>Next Page</button>
+      </Buttons>
+
       <PokemonContainer>
         { pokemons !== [] ? pokemons.map( pokemon => GetPokemon( pokemon ) ) : "" }
       </PokemonContainer>

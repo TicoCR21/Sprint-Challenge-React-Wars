@@ -8,12 +8,10 @@ const PokemonCard = styled.div`
   margin : 40px;
   padding: 30px;
   border-radius : 30px;
-  background: rgb( 200, 200, 200 );
+  background: #FFD300;
 `;
 
 const PokemonHeader = styled.div`
-
-  background: red;
   display : flex;
 
   h1
@@ -36,7 +34,7 @@ const PokemonHeader = styled.div`
 `;
 
 const PokemonImage = styled.div`
-    background: red;
+  background: linear-gradient( to left, rgba( 10, 10 , 10, 1 ), rgba( 218, 165, 32, 1 ) );
 
   width: 100%;
   height: 350px;
@@ -51,18 +49,20 @@ const PokemonImage = styled.div`
 `;
 
 const PokemonDescription = styled.div`
-    background: red;
+    background: #FDA50F;
 
     h3
     {
         font-size : 2.1rem;
         letter-spacing: 1.2px;
         font-weight : 600;
+        margin-left: 15px; 
     }
 
     ul
     {
         margin-top: -23px;
+        margin-left: 25px; 
     }
 
     li
